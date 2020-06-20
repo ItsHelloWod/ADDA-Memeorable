@@ -102,9 +102,10 @@ class ADDA():
                 with tf.GradientTape(persistent=True) as tape:
                     loss1 = adver_loss(valid, dis_t(Xt))
                     loss2 = adver_loss(fake, dis_t(Xt)) + adver_loss(valid, dis_s(Xs))
-                gradients1 = tape.gradient(loss1, dis_t.trainable_variables)
+                # update encoder_t weights first, and then come to discrinator
+                gradients1 = tape.gradient(loss1, encoder_et.trainable_variables)
                 gradients2 = tape.gradient(loss2, dis_s.trainable_variables)
-                optimizer.apply_gradients(zip(gradients1, dis_t.trainable_variables))
+                optimizer.apply_gradients(zip(gradients1, encoder_et.trainable_variables))
                 optimizer.apply_gradients(zip(gradients2, dis_s.trainable_variables))
 
     def predict(self, test_generator):
